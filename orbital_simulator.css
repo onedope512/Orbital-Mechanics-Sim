@@ -1,0 +1,870 @@
+/* =============================================================
+   ORBITAL SIMULATOR 3D — Stylesheet
+   Theme: dark space UI, cyan accent (#0ff), monospace font
+   ============================================================= */
+
+/* ── Reset & Base ──────────────────────────────────────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  color: #0ff;
+}
+
+/* ── Left Sidebar Panel ────────────────────────────────────── */
+#ui {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 275px;
+  height: 100vh;
+  background: rgba(0, 8, 18, .93);
+  border-right: 1px solid #0ff3;
+  padding: 12px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+h1 {
+  font-size: 12px;
+  letter-spacing: 3px;
+  margin-bottom: 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #0ff3;
+}
+
+/* Section blocks inside the sidebar */
+.sec {
+  margin-bottom: 11px;
+}
+
+.sec-title {
+  font-size: 10px;
+  color: #0ffa;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+/* ── Form Controls ─────────────────────────────────────────── */
+label {
+  font-size: 11px;
+  color: #8cf;
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* Floating right-side value readout next to a label */
+.val {
+  float: right;
+  color: #0ff;
+}
+
+input[type=range] {
+  width: 100%;
+  accent-color: #0ff;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+input[type=color] {
+  width: 100%;
+  height: 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+/* ── Lucide icon sizing ─────────────────────────────────────── */
+button svg {
+  width: 13px;
+  height: 13px;
+  vertical-align: -0.15em;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+/* ── Buttons ───────────────────────────────────────────────── */
+button {
+  background: rgba(0,255,255,0.04);
+  border: 1px solid rgba(0,255,255,0.22);
+  color: #9ef;
+  padding: 5px 8px;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background .1s, border-color .1s, color .1s, transform .08s, box-shadow .1s;
+  margin-bottom: 4px;
+  width: 100%;
+  border-radius: 2px;
+  user-select: none;
+}
+
+button:hover {
+  background: rgba(0,255,255,0.11);
+  border-color: rgba(0,255,255,0.6);
+  color: #cff;
+  box-shadow: 0 0 6px rgba(0,255,255,0.15);
+}
+
+button:active {
+  transform: scale(0.95);
+  background: rgba(0,255,255,0.18);
+  box-shadow: 0 0 12px rgba(0,255,255,0.25);
+}
+
+/* Active / toggled-on state */
+button.on {
+  background: rgba(0,255,255,0.15);
+  border-color: rgba(0,255,255,0.7);
+  color: #fff;
+  box-shadow: 0 0 8px rgba(0,255,255,0.2);
+}
+
+/* Danger / destructive action (very muted) */
+button.red {
+  border-color: rgba(160,60,60,0.25);
+  color: #966;
+}
+button.red:hover {
+  background: rgba(160,60,60,0.1);
+  border-color: rgba(160,60,60,0.45);
+  color: #b88;
+  box-shadow: none;
+}
+
+/* Time-reversal button (amber) */
+button.rev {
+  border-color: rgba(255,160,0,0.3);
+  color: #c90;
+}
+button.rev.on {
+  background: rgba(255,160,0,0.12);
+  border-color: rgba(255,160,0,0.65);
+  color: #fa0;
+  box-shadow: 0 0 8px rgba(255,160,0,0.2);
+}
+
+/* Positive action (green) */
+button.grn {
+  border-color: rgba(0,200,100,0.3);
+  color: #0b8;
+}
+button.grn.on {
+  background: rgba(0,200,100,0.12);
+  border-color: rgba(0,200,100,0.65);
+  color: #0da;
+  box-shadow: 0 0 8px rgba(0,200,100,0.2);
+}
+
+/* Horizontal pair of equal-width buttons */
+.row {
+  display: flex;
+  gap: 4px;
+}
+.row button {
+  flex: 1;
+}
+
+/* ── Status / warning text ─────────────────────────────────── */
+#status {
+  font-size: 10px;
+  color: #ff0;
+  min-height: 16px;
+  margin-top: 4px;
+  transition: color 0.2s;
+}
+
+/* ── Right Panel — Body Manager ────────────────────────────── */
+#body-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 285px;
+  height: 100vh;
+  background: rgba(0, 8, 18, .93);
+  border-left: 1px solid #0ff3;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+.bp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid #0ff3;
+  flex-shrink: 0;
+}
+
+.bp-title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #0ffa;
+  text-transform: uppercase;
+}
+
+#bp-selall {
+  width: auto;
+  padding: 2px 7px;
+  font-size: 9px;
+  margin: 0;
+  border-color: #0ff3;
+}
+
+/* Multi-select action bar */
+#multiselect-bar {
+  background: #001a22;
+  border-bottom: 1px solid #0ff4;
+  padding: 7px 12px;
+  font-size: 10px;
+  color: #0ff;
+  flex-shrink: 0;
+}
+
+#ms-count {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 10px;
+  color: #0ff;
+}
+
+.ms-actions {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.ms-actions button {
+  flex: 1;
+  padding: 3px 4px;
+  font-size: 9px;
+  margin: 0;
+}
+
+/* ── Body List ─────────────────────────────────────────────── */
+#body-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 8px;
+}
+
+.bitem {
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  border: 1px solid #fff1;
+  border-radius: 3px;
+  font-size: 10px;
+  animation: bitemIn 0.22s ease both;
+  transition: border-color .15s, background .15s;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.bitem:hover {
+  border-color: #0ff4;
+  background: rgba(0,180,180,0.07);
+}
+
+.bitem:nth-child(1)  { animation-delay: 0ms;  }
+.bitem:nth-child(2)  { animation-delay: 30ms; }
+.bitem:nth-child(3)  { animation-delay: 60ms; }
+.bitem:nth-child(4)  { animation-delay: 90ms; }
+.bitem:nth-child(5)  { animation-delay: 120ms;}
+.bitem:nth-child(6)  { animation-delay: 150ms;}
+.bitem:nth-child(n+7){ animation-delay: 180ms;}
+
+/* Currently selected body */
+.bitem.sel {
+  border-color: #ff06;
+  background: #ff0108;
+}
+
+/* Multi-selected body (cyan tint) */
+.bitem.multi {
+  border-color: #0ff5;
+  background: #0ff108;
+}
+
+/* Ghost / no-collide body (dashed border) */
+.bitem.ghost {
+  border-style: dashed;
+  border-color: #ffffff44;
+  opacity: 0.8;
+}
+
+/* Row 1: dot + name + mass readout */
+.bi-row1 {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 4px;
+}
+
+/* Colour dot representing the body */
+.bdot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bname {
+  cursor: pointer;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.bname:hover { color: #cff; }
+
+.bi-mass {
+  font-size: 9px;
+  color: #0ffa;
+  flex-shrink: 0;
+}
+
+/* Row 2: action buttons — hidden by default, shown on hover or select */
+.bi-row2 {
+  display: flex;
+  gap: 3px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.15s ease, opacity 0.15s ease, margin-top 0.15s ease;
+  opacity: 0;
+  margin-top: 0;
+}
+
+.bitem.sel .bi-row2,
+.bitem.multi .bi-row2 {
+  max-height: 32px;
+  opacity: 1;
+  margin-top: 4px;
+}
+
+/* Tiny inline buttons inside each body row */
+.bitem .bb {
+  flex: 1;
+  padding: 3px 2px;
+  font-size: 11px;
+  margin: 0;
+  min-width: 0;
+}
+.bitem .bb.del        { border-color: rgba(180,70,70,0.3); color: #b88; }
+.bitem .bb.del:hover  { background: rgba(180,70,70,0.12); border-color: rgba(180,70,70,0.6); color: #d99; }
+.bitem .bb.thr        { border-color: rgba(255,160,0,0.3); color: #b80; }
+.bitem .bb.thr.on     { background: rgba(255,160,0,0.15); border-color: rgba(255,160,0,0.6); color: #fa0; }
+.bitem .bb.fol        { border-color: rgba(0,180,100,0.3); color: #0a7; }
+.bitem .bb.fol.on     { background: rgba(0,180,100,0.15); border-color: rgba(0,180,100,0.6); color: #0c9; }
+.bitem .bb.ghost-btn  { border-color: rgba(180,180,180,0.2); color: #777; }
+.bitem .bb.ghost-btn.on { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); color: #bbb; }
+
+/* Expanded controls (mass/size adjust) — shown for selected body */
+.bi-extra {
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid #fff1;
+}
+
+.bi-adj {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 3px;
+}
+
+.bi-adj-lbl {
+  font-size: 9px;
+  color: #8cf;
+  width: 26px;
+  flex-shrink: 0;
+}
+
+.bi-adj .bb.adj {
+  flex: none;
+  width: 20px;
+  padding: 1px 3px;
+  font-size: 11px;
+  font-weight: bold;
+  color: #0ff;
+  border-color: #0ff4;
+}
+
+.bi-val {
+  flex: 1;
+  text-align: center;
+  font-size: 10px;
+  color: #0ff;
+}
+
+/* ── Thrust Panel ──────────────────────────────────────────── */
+#thrust-panel {
+  background: #1a0800;
+  border-top: 1px solid #fa04;
+  padding: 8px 12px;
+  flex-shrink: 0;
+  display: none;
+}
+
+#thrust-panel .tpn {
+  font-size: 11px;
+  color: #fa0;
+  margin-bottom: 5px;
+}
+
+#thrust-keys {
+  font-size: 10px;
+  color: #fc8;
+  line-height: 1.8;
+}
+
+/* ── Recorder Panel ────────────────────────────────────────── */
+#rec-panel {
+  background: #001a00;
+  border: 1px solid #0f04;
+  border-radius: 3px;
+  padding: 7px;
+  margin-top: 6px;
+  display: none;
+}
+
+#rec-panel .rpn {
+  font-size: 10px;
+  color: #0f8;
+  margin-bottom: 5px;
+}
+
+#pbSlider {
+  width: 100%;
+  accent-color: #0f8;
+  margin: 4px 0;
+}
+
+/* ── Top Bar ───────────────────────────────────────────────── */
+#topbar {
+  position: fixed;
+  top: 0;
+  left: 275px;
+  right: 285px;
+  height: 44px;
+  background: rgba(0, 8, 18, .93);
+  border-bottom: 1px solid #0ff3;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 8px;
+  z-index: 10;
+}
+
+#topbar button {
+  width: auto;
+  margin: 0;
+  padding: 4px 12px;
+  font-size: 11px;
+}
+
+#simtime {
+  font-size: 11px;
+  color: #0ffa;
+}
+
+#hint {
+  font-size: 10px;
+  color: #fff3;
+  margin-left: auto;
+}
+
+/* ── Hover Tooltip ─────────────────────────────────────────── */
+#hover-tip {
+  position: fixed;
+  pointer-events: none;
+  z-index: 20;
+  background: rgba(0, 8, 18, .93);
+  border: 1px solid #0ff5;
+  padding: 5px 10px;
+  font-size: 11px;
+  line-height: 1.7;
+  display: none;
+  white-space: nowrap;
+}
+#hover-tip .hn { color: #fff; font-size: 12px; font-weight: bold; }
+#hover-tip .ht { color: #0ffa; font-size: 10px; }
+#hover-tip .hv { color: #8cf; font-size: 10px; }
+
+/* ── Body Preset Tile Grid ─────────────────────────────────── */
+#presetGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  margin-bottom: 8px;
+}
+
+.ptile {
+  background: #0a1a2a;
+  border: 1px solid #0ff3;
+  border-radius: 3px;
+  padding: 4px 2px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 9px;
+  color: #8cf;
+  transition: background .15s, border-color .15s;
+}
+.ptile:hover  { background: #0d2233; border-color: #0ff9; }
+.ptile.sel    { background: #002233; border-color: #0ff; color: #fff; }
+.ptile .pe    { font-size: 14px; display: block; line-height: 1; }
+.ptile .pe svg { width: 30px; height: 30px; margin: 2px auto; display: block; }
+.ptile .pn    { display: block; font-size: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── Stats Overlay (bottom-right) ──────────────────────────── */
+#overlay {
+  position: fixed;
+  bottom: 10px;
+  right: 295px;
+  font-size: 10px;
+  color: #fff4;
+  text-align: right;
+  line-height: 1.8;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* ── Persistent World-Space Labels (Origin / CoM) ─────────── */
+.world-label {
+  position: fixed;
+  pointer-events: none;
+  z-index: 5;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #ffffff88;
+  text-shadow: 0 0 6px #000, 0 0 12px #000;
+  transform: translate(-50%, -180%);
+  white-space: nowrap;
+}
+
+#label-com {
+  color: #0ff9;
+}
+
+/* ── Floating Body Labels ──────────────────────────────────── */
+#labels {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.blabel {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  text-shadow: 0 0 4px #000, 0 0 8px #000;
+  white-space: nowrap;
+}
+
+/* =============================================================
+   ANIMATIONS
+   ============================================================= */
+
+@keyframes tutOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes tutBoxIn {
+  from { opacity: 0; transform: scale(0.88) translateY(28px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+@keyframes tabPageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+@keyframes bitemIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0);     }
+}
+
+@keyframes statusPop {
+  0%   { transform: scale(1);    color: #ff0; }
+  40%  { transform: scale(1.06); color: #fff; }
+  100% { transform: scale(1);    color: #ff0; }
+}
+
+@keyframes btnRipple {
+  from { box-shadow: 0 0 0 0 #0ff5; }
+  to   { box-shadow: 0 0 0 10px #0ff0; }
+}
+
+/* =============================================================
+   TUTORIAL MODAL
+   ============================================================= */
+
+/* Semi-transparent backdrop */
+#tut-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .82);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: tutOverlayIn 0.35s ease both;
+}
+
+/* Modal box */
+#tut-box {
+  background: #000d1a;
+  border: 1px solid #0ff6;
+  border-radius: 6px;
+  width: 700px;
+  max-width: 96vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Courier New', monospace;
+  box-shadow: 0 0 40px #0ff2;
+  animation: tutBoxIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+#tut-header {
+  padding: 16px 20px 10px;
+  border-bottom: 1px solid #0ff2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#tut-header h2 {
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: #0ff;
+}
+
+/* Tab strip */
+#tut-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 10px 20px 0;
+  border-bottom: 1px solid #0ff2;
+}
+
+.ttab {
+  background: transparent;
+  border: 1px solid #0ff3;
+  border-bottom: none;
+  color: #0ff8;
+  padding: 5px 12px;
+  font-family: inherit;
+  font-size: 10px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border-radius: 3px 3px 0 0;
+  transition: background .15s;
+}
+.ttab:hover { background: #0ff1; }
+.ttab.on    { background: #0ff2; border-color: #0ff; color: #fff; }
+
+/* Scrollable content area */
+#tut-body {
+  padding: 18px 20px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.tpage {
+  animation: tabPageIn 0.25s ease both;
+}
+
+#tut-body h3 {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #0ff;
+  text-transform: uppercase;
+  margin: 14px 0 7px;
+  border-bottom: 1px solid #0ff2;
+  padding-bottom: 4px;
+}
+#tut-body h3:first-child { margin-top: 0; }
+
+#tut-body p {
+  font-size: 11px;
+  color: #8cf;
+  line-height: 1.75;
+  margin-bottom: 6px;
+}
+
+/* Keyboard shortcut chips row */
+#tut-body .krow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+#tut-body .kb {
+  display: inline-block;
+  background: #0a1a2a;
+  border: 1px solid #0ff5;
+  border-radius: 3px;
+  padding: 2px 7px;
+  font-size: 10px;
+  color: #fff;
+  white-space: nowrap;
+}
+#tut-body .kb span {
+  color: #0ffa;
+  font-size: 9px;
+  margin-left: 5px;
+}
+
+/* Reference tables */
+#tut-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+  margin-bottom: 8px;
+}
+#tut-body td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #0ff1;
+  color: #8cf;
+  vertical-align: top;
+}
+#tut-body td:first-child {
+  color: #0ff;
+  white-space: nowrap;
+  width: 120px;
+}
+
+/* Footer with action buttons */
+#tut-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #0ff2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+#tut-footer button {
+  background: transparent;
+  border: 1px solid #0ff4;
+  color: #0ff;
+  padding: 6px 18px;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+#tut-footer button:hover        { background: #0ff2; border-color: #0ff; }
+#tut-footer button.pri          { border-color: #0ff; background: #0ff2; color: #fff; }
+#tut-footer button.pri:hover    { background: #0ff4; }
+
+/* ── Settings Popup ────────────────────────────────────────── */
+#btnSettings {
+  width: auto;
+  margin: 0;
+  padding: 4px 10px;
+  font-size: 13px;
+  border-color: rgba(0,255,255,0.2);
+  color: #8cf;
+}
+
+#settings-popup {
+  position: fixed;
+  top: 48px;
+  right: 0;
+  width: 240px;
+  background: rgba(0, 8, 18, 0.97);
+  border: 1px solid rgba(0,255,255,0.2);
+  border-top: none;
+  border-right: none;
+  padding: 14px 14px 10px;
+  z-index: 20;
+  display: none;
+  font-family: 'Courier New', monospace;
+}
+
+#settings-popup .sp-title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: rgba(0,255,255,0.6);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+#settings-popup .sp-sep {
+  border-top: 1px solid rgba(0,255,255,0.1);
+  margin: 10px 0;
+}
+
+#settings-popup .sp-row {
+  margin-bottom: 8px;
+}
+
+#settings-popup label {
+  font-size: 10px;
+  color: #8cf;
+  margin-bottom: 3px;
+}
+
+#settings-popup input[type=range] {
+  margin-bottom: 8px;
+}
+
+#settings-popup button {
+  margin-bottom: 0;
+}
+
+#btnFeedback {
+  width: auto;
+  margin: 0 6px 0 0;
+  padding: 4px 10px;
+  font-size: 13px;
+  border-color: rgba(0,255,255,0.2);
+  color: #8cf;
+}
+
+#feedback-popup {
+  position: fixed;
+  top: 48px;
+  right: 0;
+  width: 280px;
+  background: rgba(0, 8, 18, 0.97);
+  border: 1px solid rgba(0,255,255,0.2);
+  border-top: none;
+  border-right: none;
+  padding: 14px 14px 10px;
+  z-index: 20;
+  display: none;
+  font-family: 'Courier New', monospace;
+}
+
+#feedback-popup .sp-title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: rgba(0,255,255,0.6);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+#feedback-popup button.pri       { border-color: #0ff; background: #0ff2; color: #fff; }
+#feedback-popup button.pri:hover { background: #0ff4; }

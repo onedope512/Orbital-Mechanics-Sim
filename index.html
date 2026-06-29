@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3D Orbital Mechanics Simulator</title>
+  <link rel="stylesheet" href="orbital_simulator.css">
+</head>
+<body>
+
+<!-- ============================================================
+     TUTORIAL MODAL
+     Shown on first visit. Press ? to reopen.
+     Tabs are driven by orbital_simulator.js.
+     ============================================================ -->
+<div id="tut-overlay">
+  <div id="tut-box">
+
+    <div id="tut-header">
+      <h2>⚛ ORBITAL SIM 3D — QUICK START</h2>
+      <span style="font-size:10px;color:#0ff8;">Press ? at any time to reopen</span>
+    </div>
+
+    <div id="tut-tabs">
+      <button class="ttab on"  data-tab="basics">Basics</button>
+      <button class="ttab"     data-tab="camera">Camera</button>
+      <button class="ttab"     data-tab="bodies">Bodies</button>
+      <button class="ttab"     data-tab="physics">Physics</button>
+      <button class="ttab"     data-tab="tools">Tools</button>
+    </div>
+
+    <div id="tut-body">
+
+      <!-- TAB: Basics -->
+      <div class="tpage" id="tpage-basics">
+        <h3>Placing Bodies</h3>
+        <p>Select a preset from the grid on the left (Earth, Sun, Black Hole, etc.) or leave it blank for a custom body.
+           Adjust <b>Mass</b>, <b>Size</b>, and <b>Color</b>, then click <b>+ PLACE</b> or click anywhere on the
+           simulation canvas. Without a preset selected, bodies are named Body 1, Body 2, etc.</p>
+
+        <h3>Velocity Arrow</h3>
+        <p>When placing, click and <b>drag</b> on the canvas to set an initial velocity.
+           The longer the drag, the faster the launch. Release to place the body.</p>
+
+        <h3>Top Bar Controls</h3>
+        <table>
+          <tr><td>⏸ / ▶ Pause/Play</td>  <td>Freeze or resume the simulation.</td></tr>
+          <tr><td>⏩ Speed slider</td>     <td>Simulation speed multiplier. A warning appears above 50×.</td></tr>
+          <tr><td>🔁 Reverse</td>          <td>Run physics backwards in time.</td></tr>
+          <tr><td>🎯 Lock On</td>          <td>Locks the camera to follow the selected body. Press Esc or click Unlock to release.</td></tr>
+          <tr><td>💾 Save / 📂 Load</td>   <td>Export or import the full scenario as a JSON file.</td></tr>
+        </table>
+
+        <h3>Keyboard Shortcuts</h3>
+        <div class="krow">
+          <div class="kb">C   <span>center on origin</span></div>
+          <div class="kb">Esc <span>deselect / exit mode</span></div>
+          <div class="kb">?   <span>toggle this help</span></div>
+        </div>
+      </div>
+
+      <!-- TAB: Camera -->
+      <div class="tpage" id="tpage-camera" style="display:none">
+        <h3>Orbit Controls</h3>
+        <table>
+          <tr><td>Left drag</td>    <td>Rotate the camera around the target point.</td></tr>
+          <tr><td>Right drag</td>   <td>Pan the camera (shift the target point).</td></tr>
+          <tr><td>Scroll wheel</td> <td>Zoom in/out toward the cursor position — the view re-centres on wherever you scroll.</td></tr>
+        </table>
+
+        <h3>Camera Modes</h3>
+        <table>
+          <tr><td>⊕ Center on Origin</td>    <td>Snap the camera back to (0, 0, 0). Also press <b>C</b>.</td></tr>
+          <tr><td>🎯 Lock On</td>             <td>Select a body in the list, then click Lock On in the top bar. Camera follows that body continuously.</td></tr>
+          <tr><td>Lock Camera to CoM</td>    <td>Camera follows the system's centre of mass. Useful for multi-body systems.</td></tr>
+          <tr><td>Follow (per-body)</td>     <td>Click the green FOL button next to any body in the list.</td></tr>
+        </table>
+
+        <h3>Tips</h3>
+        <p>Zoom-to-cursor means you can zoom into any body without manually panning first — just hover over it and scroll.</p>
+      </div>
+
+      <!-- TAB: Bodies -->
+      <div class="tpage" id="tpage-bodies" style="display:none">
+        <h3>Body List (right panel)</h3>
+        <p>Every placed body appears in the list on the right. Click a name to <b>select</b> it.
+           <b>Shift+click</b> to multi-select. <b>Double-click</b> a name to rename it.</p>
+        <table>
+          <tr><td>&#x1F680; button</td> <td>Select body and enable WASD thrust control.</td></tr>
+          <tr><td>&#x1F441; button</td> <td>Lock camera to follow that body.</td></tr>
+          <tr><td>&#x1F47B; button</td> <td>Toggle Ghost mode — body passes through everything (no collisions).</td></tr>
+          <tr><td>&#x2715; button</td>  <td>Remove the body from the simulation.</td></tr>
+        </table>
+
+        <h3>Selected Body Controls</h3>
+        <p>Selecting a body expands it to show <b>Mass</b> and <b>Size</b> adjust buttons (&minus;/+).
+           Mass adjusts by &plusmn;15% per click. Size adjusts the visual radius by &plusmn;2 units.</p>
+
+        <h3>Multi-Select</h3>
+        <table>
+          <tr><td>&#x25CE; CoM Lock</td>   <td>Camera follows the centre of mass of just your selected group.</td></tr>
+          <tr><td>&#x1F680; Group THR</td> <td>WASD thrust applies to all selected bodies simultaneously.</td></tr>
+          <tr><td>Delete All</td>           <td>Remove all selected bodies at once.</td></tr>
+        </table>
+
+        <h3>Presets</h3>
+        <p>The 12 preset tiles (Asteroid to Black Hole) set mass, radius, colour, and density tag automatically.
+           You can override Mass and Size before placing. The preset name becomes the body's default label.</p>
+
+        <h3>Collisions</h3>
+        <p>When two bodies overlap they merge — momentum is fully conserved. The merged body inherits the heavier
+           body's name with the smaller appended (e.g. <i>Sun+Earth</i>). Enable Ghost mode to prevent collisions.</p>
+      </div>
+
+      <!-- TAB: Physics -->
+      <div class="tpage" id="tpage-physics" style="display:none">
+        <h3>Integrator</h3>
+        <p>The simulation uses a <b>symplectic leapfrog (Velocity-Verlet)</b> integrator — this conserves energy
+           over long periods so orbits stay stable indefinitely. Euler or RK4 would slowly gain or lose energy.</p>
+
+        <h3>Thrust Mode (WASD)</h3>
+        <p>Select a body, click <b>THR</b> next to it, and use keyboard controls to apply thrust each physics step:</p>
+        <div class="krow">
+          <div class="kb">W / S <span>accelerate / brake</span></div>
+          <div class="kb">A / D <span>strafe left / right</span></div>
+          <div class="kb">Q / E <span>up / down</span></div>
+        </div>
+
+        <h3>Presets — Orbital Scenarios</h3>
+        <table>
+          <tr><td>Binary Stars</td>       <td>Two equal-mass stars in a stable mutual orbit.</td></tr>
+          <tr><td>Solar System</td>       <td>Sun + scaled rocky and gas planets in circular orbits.</td></tr>
+          <tr><td>Figure-8</td>          <td>Three equal-mass bodies in the stable figure-8 choreography.</td></tr>
+          <tr><td>Hohmann Transfer</td>  <td>A ship executes a two-burn transfer from an inner to outer orbit.</td></tr>
+          <tr><td>Lagrange Points</td>   <td>Sun + Jupiter + trojan asteroids at L4/L5 stable points.</td></tr>
+        </table>
+
+        <h3>Energy Display</h3>
+        <p>The overlay (bottom-right) shows body count, centre of mass, FPS, and energy drift percentage.
+           For stable orbits, drift should stay near 0%.</p>
+      </div>
+
+      <!-- TAB: Tools -->
+      <div class="tpage" id="tpage-tools" style="display:none">
+        <h3>Gravitational Well Grid</h3>
+        <p>The simulation grid is also a live gravitational potential surface — it deforms downward under massive
+           bodies. A black hole creates a sharp spike. Use the sliders to adjust:</p>
+        <table>
+          <tr><td>Well Detail</td>       <td>How far from a body the grid deforms. Higher = larger wells, more GPU work.</td></tr>
+          <tr><td>Grid Brightness</td>   <td>Opacity/brightness of all grid lines (goes above 100% to fully saturate).</td></tr>
+          <tr><td>Grid Frequency</td>    <td>Spacing of grid lines — slide right for a finer, denser grid.</td></tr>
+        </table>
+
+        <h3>Vectors &amp; Labels</h3>
+        <table>
+          <tr><td>Vectors</td>   <td>Toggle velocity (cyan) and acceleration (orange) arrows on all bodies.</td></tr>
+          <tr><td>Labels</td>    <td>Toggle floating name labels above each body.</td></tr>
+          <tr><td>Trails</td>    <td>Toggle orbital path trails. Trail length is controlled by the Trail Length slider.</td></tr>
+          <tr><td>Grav Well</td> <td>Toggle the grid displacement effect on/off.</td></tr>
+        </table>
+
+        <h3>Scenario Recorder</h3>
+        <p>Click <b>⏺ Record</b> to start capturing frames, <b>⏹ Stop</b> to finish.
+           Use the playback slider to scrub through the recording or press <b>▶ Play</b> to replay.</p>
+      </div>
+
+    </div><!-- /#tut-body -->
+
+    <div id="tut-footer">
+      <button id="tut-skip">Don't show again</button>
+      <button class="pri" id="tut-close">Start Simulating →</button>
+    </div>
+
+  </div><!-- /#tut-box -->
+</div><!-- /#tut-overlay -->
+
+
+<!-- ============================================================
+     LEFT SIDEBAR
+     ============================================================ -->
+<div id="ui">
+  <h1>⚛ ORBITAL SIM 3D</h1>
+
+  <!-- Place Body -->
+  <div class="sec">
+    <div class="sec-title">Place Body</div>
+    <div id="presetGrid"></div>
+    <label>Mass <span class="val" id="vMass">—</span></label>
+    <input type="range" id="sMass" min="1" max="100" value="10">
+    <label>Size (visual radius) <span class="val" id="vSize">7</span></label>
+    <input type="range" id="sSize" min="1" max="100" value="21">
+    <div id="densityTag" style="font-size:10px;color:#8cf;margin:3px 0 5px">Density: Rocky</div>
+    <label>Color</label>
+    <input type="color" id="sColor" value="#4477ff">
+    <div class="row">
+      <button id="btnAdd"><i data-lucide="plus-circle"></i> PLACE</button>
+    </div>
+    <div id="status">Pick a body type or adjust sliders, then PLACE</div>
+  </div>
+
+  <!-- Scenario Presets -->
+  <div class="sec">
+    <div class="sec-title">Presets</div>
+    <button id="pBinary">Binary Stars</button>
+    <button id="pSolar">Inner Solar System</button>
+    <button id="pFigure8">Figure-8 Choreography</button>
+    <button id="pHohmann">Hohmann Transfer Demo</button>
+    <button id="pLagrange">Lagrange Point Trojans</button>
+    <button id="pTidal">Tidal Disruption Event</button>
+  </div>
+
+  <!-- Tools -->
+  <div class="sec">
+    <div class="sec-title">Tools</div>
+    <div class="row">
+      <button id="btnVectors"><i data-lucide="move-diagonal"></i> Vectors</button>
+      <button id="btnLabels"><i data-lucide="tag"></i> Labels</button>
+    </div>
+    <div class="row">
+      <button id="btnTrails"    class="on"><i data-lucide="activity"></i> Trails</button>
+      <button id="btnPotential" class="on"><i data-lucide="layers"></i> Grav Well</button>
+    </div>
+    <button id="btnEasyView" title="Log-compress rendered sizes so small planets stay visible next to giant stars (visual only — physics unchanged)"><i data-lucide="eye"></i> Easier Visuals</button>
+    <label>Well Detail <span class="val" id="vGwDetail">70%</span></label>
+    <input type="range" id="sGwDetail" min="0" max="100" value="70">
+    <div id="gwWarn" style="display:none;font-size:10px;color:#ff9900;margin-top:3px;line-height:1.3">
+      ⚠️ High detail — larger wells, may lag with many bodies
+    </div>
+    <label>Grid Brightness <span class="val" id="vGridAlpha">70%</span></label>
+    <input type="range" id="sGridAlpha" min="0" max="100" value="70">
+    <label>Grid Frequency <span class="val" id="vGridFreq">50%</span></label>
+    <input type="range" id="sGridFreq" min="0" max="100" value="50">
+    <button id="btnOrigin"><i data-lucide="anchor"></i> Lock on Origin</button>
+    <button id="btnCoMLock"><i data-lucide="focus"></i> Lock on CoM</button>
+    <button id="btnFollowOff" style="display:none"><i data-lucide="x-circle"></i> Stop Following</button>
+  </div>
+
+  <!-- Scenario Recorder -->
+  <div class="sec">
+    <div class="sec-title">Scenario Recorder</div>
+    <div class="row">
+      <button id="btnRecord"  class="grn"><i data-lucide="circle"></i> Record</button>
+      <button id="btnStopRec" disabled><i data-lucide="square"></i> Stop</button>
+    </div>
+    <div id="recStatus" style="font-size:10px;color:#0f8;margin-top:4px;">Ready</div>
+    <div id="rec-panel">
+      <div class="rpn">PLAYBACK — <span id="pbFrames">0</span> frames</div>
+      <input type="range" id="pbSlider" min="0" max="100" value="0">
+      <div class="row">
+        <button id="btnPbPlay"><i data-lucide="play"></i> Play</button>
+        <button id="btnPbExit"><i data-lucide="log-out"></i> Exit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save / Load -->
+  <div class="sec">
+    <div class="sec-title">Save / Load</div>
+    <div class="row">
+      <button id="btnSave"><i data-lucide="save"></i> Save</button>
+      <button id="btnLoad"><i data-lucide="folder-open"></i> Load</button>
+    </div>
+    <input type="file" id="fileInput" accept=".json" style="display:none">
+  </div>
+
+
+  <!-- Danger zone -->
+  <div class="sec">
+    <div class="row">
+      <button id="btnClear" class="red"><i data-lucide="trash-2"></i> CLEAR ALL</button>
+    </div>
+  </div>
+</div><!-- /#ui -->
+
+
+<!-- ============================================================
+     RIGHT PANEL — Body Manager
+     ============================================================ -->
+<div id="body-panel">
+
+  <div class="bp-header">
+    <span class="bp-title">BODIES (<span id="nBodies">0</span>)</span>
+    <button id="bp-selall" onclick="selectAll()" title="Select All"><i data-lucide="check-square"></i> ALL</button>
+  </div>
+
+  <!-- Multi-select action bar (shown when >1 body selected) -->
+  <div id="multiselect-bar" style="display:none">
+    <span id="ms-count">0 selected</span>
+    <div class="ms-actions">
+      <button id="ms-com"    title="Lock camera to centre of mass of selected group"><i data-lucide="focus"></i> Lock CoM</button>
+      <button id="ms-thrust" title="Apply WASD thrust to all selected bodies"><i data-lucide="zap"></i> Group THR</button>
+    </div>
+    <div class="ms-actions">
+      <button id="ms-clear"><i data-lucide="x"></i> Clear Sel</button>
+      <button id="ms-delete" class="red"><i data-lucide="trash-2"></i> Delete All</button>
+    </div>
+  </div>
+
+  <!-- Scrollable body list -->
+  <div id="body-list"></div>
+
+  <!-- Thrust panel (shown when a body is selected) -->
+  <div id="thrust-panel">
+    <div class="tpn">&#x1F680; THRUST: <span id="tp-name">&#x2014;</span></div>
+    <label>Power <span class="val" id="vThrust">50</span></label>
+    <input type="range" id="sThrust" min="1" max="1000" value="50">
+    <div id="thrust-keys">W/S prograde/retro &middot; A/D radial &middot; Q/E normal &middot; ESC exit</div>
+  </div>
+
+</div><!-- /#body-panel -->
+
+
+<!-- ============================================================
+     TOP BAR
+     ============================================================ -->
+<div id="topbar">
+  <button id="btnPlay"><i data-lucide="pause"></i> PAUSE</button>
+  <button id="btnStep"><i data-lucide="skip-forward"></i> STEP</button>
+  <button id="btnReverse" class="rev"><i data-lucide="rewind"></i> REVERSE</button>
+  <span id="hint">Left-drag: orbit · Right-drag: pan · Scroll: zoom · C: center</span>
+  <button id="btnLockOn" disabled style="margin-left:auto;opacity:0.35;min-width:90px"><i data-lucide="crosshair"></i> Lock On</button>
+  <button id="btnFeedback" title="Send Feedback"><i data-lucide="message-square"></i> Feedback</button>
+  <button id="btnSettings" title="Settings"><i data-lucide="settings"></i></button>
+</div>
+
+<!-- Feedback popup -->
+<div id="feedback-popup">
+  <div class="sp-title">SEND FEEDBACK</div>
+  <p style="font-size:11px;color:#8cf;line-height:1.4;margin:0 0 10px">
+    Bugs, ideas, anything. Goes into a weekly digest — not read instantly.
+  </p>
+  <textarea id="feedback-text" rows="5" maxlength="4000" placeholder="What's on your mind?"
+    style="width:100%;box-sizing:border-box;background:#001a2a;border:1px solid rgba(0,255,255,0.25);color:#fff;font-family:inherit;font-size:12px;padding:6px;resize:vertical;margin-bottom:8px"></textarea>
+  <!-- Honeypot: hidden from real users, bots tend to fill every field -->
+  <input type="text" id="feedback-hp" name="company" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+  <div class="row">
+    <button id="btnFeedbackSend" class="pri"><i data-lucide="send"></i> Send</button>
+    <button id="btnFeedbackCancel">Cancel</button>
+  </div>
+  <div id="feedback-status" style="font-size:10px;color:#0f8;margin-top:6px;min-height:12px"></div>
+</div>
+
+<!-- Settings popup -->
+<div id="settings-popup">
+  <div class="sp-title">SETTINGS</div>
+  <label>Sim Speed <span class="val" id="vSpeed">1.00x</span></label>
+  <input type="range" id="sSpeed" min="-1" max="3" step="0.05" value="0">
+  <div id="speedWarn" style="display:none;font-size:10px;color:#c80;margin-top:4px;line-height:1.3">
+    ⚠ High speed — accuracy drops
+  </div>
+  <label>Trail Length <span class="val" id="vTrail">500</span></label>
+  <input type="range" id="sTrail" min="50" max="3000" step="50" value="500">
+  <label>Star Glow <span class="val" id="vStarGlow">100%</span></label>
+  <input type="range" id="sStarGlow" min="0" max="150" value="100">
+  <div class="sp-sep"></div>
+  <div class="sp-title" style="margin-top:0">AUDIO</div>
+  <label>Master <span class="val" id="vVol-master">80%</span></label>
+  <input type="range" id="sVol-master" min="0" max="100" value="80" oninput="setVolume('master',+this.value)">
+  <label>Interface <span class="val" id="vVol-ui">80%</span></label>
+  <input type="range" id="sVol-ui" min="0" max="100" value="80" oninput="setVolume('ui',+this.value)">
+  <label>Impact <span class="val" id="vVol-impact">80%</span></label>
+  <input type="range" id="sVol-impact" min="0" max="100" value="80" oninput="setVolume('impact',+this.value)">
+</div>
+
+
+<!-- ============================================================
+     OVERLAYS
+     ============================================================ -->
+<!-- Floating body name labels (positioned by JS) -->
+<div id="labels"></div>
+
+<!-- Persistent world-space labels for origin and CoM -->
+<div id="label-origin" class="world-label">ORIGIN</div>
+<div id="label-com"    class="world-label" style="display:none">CoM</div>
+
+<!-- Hover tooltip -->
+<div id="hover-tip">
+  <div class="hn" id="ht-name"></div>
+  <div class="ht" id="ht-type"></div>
+  <div class="hv" id="ht-vel"></div>
+</div>
+
+<!-- Stats readout (bottom-right) -->
+<div id="overlay">
+  Bodies: <span id="oBodies">0</span><br>
+  CoM: <span id="oCoM">—</span><br>
+  FPS: <span id="oFps">60</span><br>
+  Energy drift: <span id="oEnergy">—</span>
+</div>
+
+
+<!-- ============================================================
+     SCRIPTS
+     Three.js must load before our script.
+     ============================================================ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<!-- Application code is split into focused modules. Load order matters
+     because everything shares a single global scope (no ES modules) and
+     later files reference symbols defined earlier. -->
+<script src="js/01-constants.js?v=20260627i"></script>
+<script src="js/02-audio.js?v=20260627i"></script>
+<script src="js/03-scene.js?v=20260627i"></script>
+<script src="js/04-shaders.js?v=20260627i"></script>
+<script src="js/05-state.js?v=20260627i"></script>
+<script src="js/06-body.js?v=20260627i"></script>
+<script src="js/07-physics.js?v=20260627i"></script>
+<script src="js/08-recording.js?v=20260627i"></script>
+<script src="js/09-interaction.js?v=20260627i"></script>
+<script src="js/10-presets.js?v=20260627i"></script>
+<script src="js/11-controls.js?v=20260627i"></script>
+<script src="js/12-render.js?v=20260627i"></script>
+<script src="js/13-feedback.js?v=20260627i"></script>
+
+</body>
+</html>
