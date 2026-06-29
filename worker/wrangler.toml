@@ -1,0 +1,13 @@
+name = "orbital-sim-feedback"
+main = "feedback-worker.js"
+compatibility_date = "2024-11-01"
+
+# Non-secret config — safe to commit.
+[vars]
+GH_OWNER = "nikhil9206"
+GH_REPO  = "Orbital-Mechanics-Sim"
+
+# Secret config — NOT set here. Run this once after `wrangler login`:
+#   wrangler secret put GH_TOKEN
+# and paste the GitHub fine-grained PAT when prompted (see ../README.md
+# at the repo root, or worker setup notes in 13-feedback.js).
