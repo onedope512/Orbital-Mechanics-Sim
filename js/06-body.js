@@ -222,6 +222,7 @@ class Body {
     this._noCollide = false; // ghost mode: skip all collision checks
     this._collapsing  = false; // gravitational-collapse animation active?
     this._collapseT   = 0;     // 0→1 progress through the collapse
+    this._totalDV     = 0;     // cumulative |Δv| applied via WASD thrust
 
     // Axial spin — tilted slightly off vertical so it reads visually,
     // magnitude set by type (see _spinRateFor). Angular momentum (L = Iω)

@@ -298,6 +298,12 @@
   <!-- Scrollable body list -->
   <div id="body-list"></div>
 
+  <!-- Orbital Elements panel — updated every 20 frames when a body is selected -->
+  <div id="orb-panel" style="display:none">
+    <div class="orb-title">ORBITAL ELEMENTS</div>
+    <div id="orb-content"></div>
+  </div>
+
   <!-- Thrust panel (shown when a body is selected) -->
   <div id="thrust-panel">
     <div class="tpn">&#x1F680; THRUST: <span id="tp-name">&#x2014;</span></div>
@@ -398,19 +404,19 @@
 <!-- Application code is split into focused modules. Load order matters
      because everything shares a single global scope (no ES modules) and
      later files reference symbols defined earlier. -->
-<script src="js/01-constants.js?v=20260627i"></script>
-<script src="js/02-audio.js?v=20260627i"></script>
-<script src="js/03-scene.js?v=20260627i"></script>
-<script src="js/04-shaders.js?v=20260627i"></script>
-<script src="js/05-state.js?v=20260627i"></script>
-<script src="js/06-body.js?v=20260627i"></script>
-<script src="js/07-physics.js?v=20260627i"></script>
-<script src="js/08-recording.js?v=20260627i"></script>
-<script src="js/09-interaction.js?v=20260627i"></script>
-<script src="js/10-presets.js?v=20260627i"></script>
-<script src="js/11-controls.js?v=20260627i"></script>
-<script src="js/12-render.js?v=20260627i"></script>
-<script src="js/13-feedback.js?v=20260627i"></script>
+<script src="js/01-constants.js?v=20260722a"></script>
+<script src="js/02-audio.js?v=20260722a"></script>
+<script src="js/03-scene.js?v=20260722a"></script>
+<script src="js/04-shaders.js?v=20260722a"></script>
+<script src="js/05-state.js?v=20260722a"></script>
+<script src="js/06-body.js?v=20260722a"></script>
+<script src="js/07-physics.js?v=20260722a"></script>
+<script src="js/08-recording.js?v=20260722a"></script>
+<script src="js/09-interaction.js?v=20260722a"></script>
+<script src="js/10-presets.js?v=20260722a"></script>
+<script src="js/11-controls.js?v=20260722a"></script>
+<script src="js/12-render.js?v=20260722a"></script>
+<script src="js/13-feedback.js?v=20260722a"></script>
 
 </body>
 </html>

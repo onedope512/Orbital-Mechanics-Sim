@@ -868,3 +868,47 @@ button.grn.on {
 
 #feedback-popup button.pri       { border-color: #0ff; background: #0ff2; color: #fff; }
 #feedback-popup button.pri:hover { background: #0ff4; }
+
+/* ── Orbital Elements Panel ────────────────────────────────── */
+#orb-panel {
+  padding: 0 8px 8px;
+  border-top: 1px solid rgba(0,255,255,0.12);
+}
+.orb-title {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: rgba(0,255,255,0.45);
+  padding: 7px 0 4px;
+}
+.orb-sep {
+  height: 1px;
+  background: rgba(0,255,255,0.1);
+  margin: 3px 0;
+}
+.orb-row {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 1px 0;
+  line-height: 1.5;
+}
+.ok {
+  color: rgba(0,200,255,0.55);
+  font-size: 10px;
+  min-width: 30px;
+  font-family: 'Courier New', monospace;
+}
+.ov {
+  color: #dff;
+  font-size: 10px;
+  font-family: 'Courier New', monospace;
+  flex: 1;
+}
+.orb-att {
+  color: rgba(255,200,80,0.85);
+  font-size: 10px;
+}
+.od {
+  color: rgba(100,200,255,0.45);
+  font-size: 9px;
+}

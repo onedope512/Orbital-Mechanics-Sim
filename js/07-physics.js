@@ -109,21 +109,88 @@ function applyThrust(dt) {
 
   let anyKey = false;
   const dv = +document.getElementById('sThrust').value * dt * 30;
-  // Thrust axes follow the camera view — forward = where camera looks (XZ plane)
   const camFwd = orbitTarget.clone().sub(camera.position);
   camFwd.y = 0;
   if (camFwd.lengthSq() < 0.0001) camFwd.set(0, 0, -1);
   camFwd.normalize();
   const camRight = new THREE.Vector3().crossVectors(camFwd, new THREE.Vector3(0, 1, 0)).normalize();
   for (const b of targets) {
+    const vBefore = b.vel.length();
     if (keys['w'] || keys['W']) { b.vel.addScaledVector(camFwd,   dv); anyKey = true; }
     if (keys['s'] || keys['S']) { b.vel.addScaledVector(camFwd,  -dv); anyKey = true; }
     if (keys['a'] || keys['A']) { b.vel.addScaledVector(camRight, -dv); anyKey = true; }
     if (keys['d'] || keys['D']) { b.vel.addScaledVector(camRight,  dv); anyKey = true; }
     if (keys['q'] || keys['Q']) { b.vel.y +=  dv; anyKey = true; }
     if (keys['e'] || keys['E']) { b.vel.y -=  dv; anyKey = true; }
+    if (anyKey) b._totalDV += Math.abs(b.vel.length() - vBefore);
   }
   if (anyKey) initAccelerations();
+}
+
+// Keplerian orbital elements of body b relative to its dominant attractor.
+// Returns null if b is alone or too close to compute stably.
+function computeOrbitalElements(b) {
+  if (bodies.length < 2) return null;
+
+  let attractor = null;
+  for (const o of bodies) {
+    if (o === b) continue;
+    if (!attractor || o.mass > attractor.mass) attractor = o;
+  }
+  if (!attractor) return null;
+
+  // Two-body gravitational parameter (includes both masses for accuracy)
+  const mu   = G * (attractor.mass + b.mass);
+  const rVec = new THREE.Vector3().subVectors(b.pos, attractor.pos);
+  const vVec = new THREE.Vector3().subVectors(b.vel, attractor.vel);
+  const r    = rVec.length();
+  if (r < 1) return null;
+  const v2 = vVec.lengthSq();
+  const v  = Math.sqrt(v2);
+
+  // Specific orbital energy ε = v²/2 − μ/r
+  const eps = v2 * 0.5 - mu / r;
+
+  // Specific angular momentum vector h = r × v
+  const hVec = new THREE.Vector3().crossVectors(rVec, vVec);
+  const h    = hVec.length();
+
+  // Eccentricity vector: e = (v × h)/μ − r̂
+  const eVec = new THREE.Vector3().crossVectors(vVec, hVec)
+    .divideScalar(mu)
+    .sub(rVec.clone().divideScalar(r));
+  const e = eVec.length();
+
+  // Inclination from the horizontal (XZ) plane — angle between h and +Y axis
+  const inc = h > 0
+    ? Math.acos(THREE.MathUtils.clamp(hVec.y / h, -1, 1)) * (180 / Math.PI)
+    : 0;
+
+  // Semi-major axis, period, and apsides (only for bound orbits)
+  let a = null, period = null, rp = null, ra = null;
+  if (Math.abs(eps) > 1e-12) a = -mu / (2 * eps);
+  if (eps < 0 && a > 0) {
+    period = 2 * Math.PI * Math.sqrt(a * a * a / mu);
+    rp = a * (1 - e);
+    ra = a * (1 + e);
+  } else if (h > 0) {
+    // Unbound orbit: periapsis from vis-viva at closest approach
+    rp = h * h / (mu * (1 + Math.max(e, 1)));
+  }
+
+  // Escape speed and circular speed at current distance from attractor
+  const vEsc  = Math.sqrt(2 * mu / r);
+  const vCirc = Math.sqrt(mu / r);
+
+  // Hill sphere radius: r_H = r·(m/3M)^(1/3) — valid when b.mass ≪ attractor.mass
+  const hillR = b.mass < attractor.mass
+    ? r * Math.pow(b.mass / (3 * attractor.mass), 1 / 3)
+    : null;
+
+  // Schwarzschild radius in sim units: r_s = 2Gm/c², using PN_C2 as c²
+  const rs = b._type === 'blackhole' ? 2 * G * b.mass / PN_C2 : null;
+
+  return { e, eps, h, inc, a, period, rp, ra, v, vEsc, vCirc, hillR, rs, r, attractor };
 }
 
 // Perfect inelastic collision â€” conserves momentum.

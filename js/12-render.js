@@ -259,6 +259,44 @@ function animate() {
       e0 = null;
       document.getElementById('oEnergy').textContent = '--';
     }
+
+    // Orbital elements panel for selected body
+    const orbPanel = document.getElementById('orb-panel');
+    if (selectedBody && bodies.length >= 2) {
+      const el = computeOrbitalElements(selectedBody);
+      if (el) {
+        const f  = (n, d = 1) => (n == null || !isFinite(n)) ? '—' : n.toFixed(d);
+        const fk = n => n == null ? '—' : n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'k' : n.toFixed(0);
+        const orbitType = el.e < 0.01 ? 'circular' : el.e < 0.1 ? 'near-circular' : el.e < 1 ? 'elliptic' : el.e < 1.001 ? 'parabolic' : 'hyperbolic';
+        const boundLabel = el.eps < 0 ? 'bound' : 'escape';
+        let html = `
+          <div class="orb-row"><span class="ok">wrt</span><span class="ov orb-att">${el.attractor.name}</span></div>
+          <div class="orb-sep"></div>
+          <div class="orb-row"><span class="ok">e</span><span class="ov">${f(el.e, 4)}</span><span class="od">${orbitType}</span></div>`;
+        if (el.a != null && el.eps < 0) html += `<div class="orb-row"><span class="ok">a</span><span class="ov">${fk(el.a)} u</span></div>`;
+        if (el.period != null)           html += `<div class="orb-row"><span class="ok">T</span><span class="ov">${f(el.period, 1)} t</span></div>`;
+        html += `<div class="orb-row"><span class="ok">i</span><span class="ov">${f(el.inc, 1)}°</span></div>`;
+        if (el.rp != null)               html += `<div class="orb-row"><span class="ok">r<sub>p</sub></span><span class="ov">${fk(el.rp)} u</span></div>`;
+        if (el.ra != null)               html += `<div class="orb-row"><span class="ok">r<sub>a</sub></span><span class="ov">${fk(el.ra)} u</span></div>`;
+        html += `
+          <div class="orb-sep"></div>
+          <div class="orb-row"><span class="ok">ε</span><span class="ov">${f(el.eps, 0)}</span><span class="od">${boundLabel}</span></div>
+          <div class="orb-row"><span class="ok">h</span><span class="ov">${fk(el.h)}</span></div>
+          <div class="orb-row"><span class="ok">v</span><span class="ov">${f(el.v, 2)} u/t</span></div>
+          <div class="orb-row"><span class="ok">v<sub>esc</sub></span><span class="ov">${f(el.vEsc, 2)} u/t</span><span class="od">${el.v >= el.vEsc ? '⚠ escape' : ''}</span></div>
+          <div class="orb-row"><span class="ok">v<sub>c</sub></span><span class="ov">${f(el.vCirc, 2)} u/t</span></div>`;
+        if (el.hillR != null) html += `<div class="orb-row"><span class="ok">r<sub>H</sub></span><span class="ov">${fk(el.hillR)} u</span></div>`;
+        if (el.rs    != null) html += `<div class="orb-row"><span class="ok">r<sub>s</sub></span><span class="ov">${f(el.rs, 3)} u</span></div>`;
+        if (selectedBody._totalDV > 0)
+          html += `<div class="orb-row"><span class="ok">Δv</span><span class="ov">${f(selectedBody._totalDV, 2)} u/t</span></div>`;
+        document.getElementById('orb-content').innerHTML = html;
+        orbPanel.style.display = 'block';
+      } else {
+        orbPanel.style.display = 'none';
+      }
+    } else {
+      orbPanel.style.display = 'none';
+    }
   }
 
   nebulaUni.uTime.value += 1;
